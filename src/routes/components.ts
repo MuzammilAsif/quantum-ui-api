@@ -8,11 +8,11 @@ export const componentsRouter = new Hono();
 // GET /api/components?library=quantum&category=buttons&framework=react&limit=20&offset=0
 // Returns components with optional filters
 componentsRouter.get('/', async (c) => {
-  const libraryId  = c.req.query('library');
+  const libraryId = c.req.query('library');
   const categoryId = c.req.query('category'); // slug like 'buttons'
-  const framework  = c.req.query('framework');
-  const limit      = parseInt(c.req.query('limit')  ?? '20');
-  const offset     = parseInt(c.req.query('offset') ?? '0');
+  const framework = c.req.query('framework');
+  const limit = parseInt(c.req.query('limit') ?? '20');
+  const offset = parseInt(c.req.query('offset') ?? '0');
 
   try {
     // Build category ID from library + slug if both provided
@@ -22,28 +22,31 @@ componentsRouter.get('/', async (c) => {
     }
 
     // Build conditions
-    const conditions = [];
-    if (libraryId)           conditions.push(eq(components.libraryId,  libraryId));
-    if (resolvedCategoryId)  conditions.push(eq(components.categoryId, resolvedCategoryId));
-
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const whereClause =
+      libraryId && resolvedCategoryId
+        ? and(eq(components.libraryId, libraryId), eq(components.categoryId, resolvedCategoryId))
+        : libraryId
+          ? eq(components.libraryId, libraryId)
+          : resolvedCategoryId
+            ? eq(components.categoryId, resolvedCategoryId)
+            : undefined;
 
     const allComponents = await db
       .select({
-        id:          components.tags,
-        libraryId:   components.libraryId,
-        categoryId:  components.categoryId,
-        name:        components.name,
-        slug:        components.slug,
+        id: components.tags,
+        libraryId: components.libraryId,
+        categoryId: components.categoryId,
+        name: components.name,
+        slug: components.slug,
         description: components.description,
-        difficulty:  components.difficulty,
-        styleTag:    components.styleTag,
-        isPremium:   components.isPremium,
-        isNew:       components.isNew,
-        tags:        components.tags,
-        author:      components.author,
-        version:     components.version,
-        createdAt:   components.createdAt,
+        difficulty: components.difficulty,
+        styleTag: components.styleTag,
+        isPremium: components.isPremium,
+        isNew: components.isNew,
+        tags: components.tags,
+        author: components.author,
+        version: components.version,
+        createdAt: components.createdAt,
       })
       .from(components)
       .where(whereClause)
@@ -62,7 +65,7 @@ componentsRouter.get('/', async (c) => {
             .where(
               and(
                 eq(implementations.componentId, comp.id),
-                eq(implementations.framework,   framework)
+                eq(implementations.framework, framework)
               )
             )
             .limit(1);

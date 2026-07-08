@@ -9,7 +9,7 @@ serve(
         fetch: app.fetch,
         port: PORT,
     },
-    (info) => {
+    (_info) => {
         console.log(`
 ╔═══════════════════════════════════════╗
 ║       Quantum UI API — Running        ║
