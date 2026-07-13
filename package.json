@@ -2,6 +2,7 @@
   "name": "quantum-ui-api",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
 "build": "echo Build skipped — Vercel compiles TypeScript natively",
